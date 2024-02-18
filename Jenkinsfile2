@@ -14,7 +14,6 @@ pipeline {
             steps {
                 // Clone the public GitHub repository
                 sh "rm -rf ./gitara2/*"
-                sh "mkdir ./gitara2"
                 sh "git clone ${REPO_URL} ./gitara2"
             }
         }
