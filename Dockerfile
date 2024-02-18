@@ -3,7 +3,7 @@ FROM ubuntu:latest
 
 # Update the package repository and install Apache2
 RUN apt-get update && apt-get install -y apache2
-
+#dadfsas
 # Set environment variables to configure Apache.
 # This is optional and can be customized.
 ENV APACHE_RUN_USER www-data
