@@ -41,16 +41,18 @@ pipeline {
             }
         }
     }
-
+        stage('Push Docker Image') {
+            steps {
+                script {
+                    sh "docker push registry.digitalocean.com/qwerty/${IMAGE_NAME}:${IMAGE_TAG}"
+                    sh 'docker image list'
+                }
+            }
+        }
     post {
         success {
             echo 'Build succeeded.'
-            sh 'docker image list'
-            // Add steps to push the image to a registry, ensuring Docker is logged in
-            script {
-                // Assuming Docker login was successful in earlier stage, you can push here
-                sh "docker push registry.digitalocean.com/qwerty/${IMAGE_NAME}:${IMAGE_TAG}"
-            }
+
         }
         failure {
             echo 'Build failed.'
