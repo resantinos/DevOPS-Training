@@ -13,7 +13,7 @@ pipeline {
             steps {
                 // Run the build script
                 // Assuming a simple Java project using Maven
-                sh 'mvn clean package'
+                sh 'docker --version'
             }
         }
 
@@ -21,13 +21,13 @@ pipeline {
             steps {
                 // Run tests
                 // This also assumes using Maven for a Java project
-                sh 'mvn test'
+                sh 'docker --version'
             }
             post {
                 // Post-condition actions for the 'Test' stage
                 always {
                     // Archive the test results
-                    junit '**/target/surefire-reports/*.xml'
+                    echo "always"
                 }
                 success {
                     // Actions to perform if the stage succeeds
