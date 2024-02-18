@@ -3,7 +3,7 @@ pipeline {
 
     environment {
         // Define the Docker image name and tag
-        IMAGE_NAME = 'imagination'
+        IMAGE_NAME = 'my-docker-image'
         IMAGE_TAG = 'latest'
         // Repository URL
         REPO_URL = 'https://github.com/resantinos/public.git'
@@ -12,16 +12,18 @@ pipeline {
     stages {
         stage('Clone Repository') {
             steps {
-                // Clone the GitHub repository
-                git "${REPO_URL}"
+                // Clone the public GitHub repository
+                sh 'git clone "${REPO_URL} ."'
             }
         }
 
         stage('Build Docker Image') {
             steps {
                 script {
+                    // Ensure Docker is available
+                    sh 'docker --version'
                     // Build the Docker image from the Dockerfile in the cloned repo
-                    docker.build("${IMAGE_NAME}:${IMAGE_TAG}")
+                    sh "docker build -t ${IMAGE_NAME}:${IMAGE_TAG} ."
                 }
             }
         }
