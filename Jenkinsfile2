@@ -24,7 +24,7 @@ pipeline {
                     // Ensure Docker is available
                     sh 'docker --version'
                     // Build the Docker image from the Dockerfile in the cloned repo
-                    sh "docker build -t ${IMAGE_NAME}:${IMAGE_TAG} ."
+                    sh "docker build -t ${IMAGE_NAME}:${IMAGE_TAG} ./gitara"
                 }
             }
         }
