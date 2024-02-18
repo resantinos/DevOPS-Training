@@ -3,7 +3,7 @@ pipeline {
 
     environment {
         // Define the Docker image name and tag
-        IMAGE_NAME = 'my-docker-image'
+        IMAGE_NAME = 'imagination'
         IMAGE_TAG = 'latest'
         // Repository URL
         REPO_URL = 'https://github.com/resantinos/public.git'
@@ -13,8 +13,20 @@ pipeline {
         stage('Clone Repository') {
             steps {
                 // Clone the public GitHub repository
+                sh "rm -rf ./gitara2/*"
                 sh "mkdir ./gitara2"
                 sh "git clone ${REPO_URL} ./gitara2"
+            }
+        }
+
+        stage('Docker Login') {
+            steps {
+                script {
+                    // Use withCredentials to securely log in to Docker
+                    withCredentials([usernamePassword(credentialsId: 'docker', passwordVariable: 'DOCKER_PASSWORD', usernameVariable: 'DOCKER_USERNAME')]) {
+                        sh 'echo $DOCKER_PASSWORD | docker login registry.digitalocean.com -u "$DOCKER_USERNAME" --password-stdin'
+                    }
+                }
             }
         }
 
@@ -33,7 +45,12 @@ pipeline {
     post {
         success {
             echo 'Build succeeded.'
-            // Here you can add steps to push the image to a registry, for example
+            sh 'docker image list'
+            // Add steps to push the image to a registry, ensuring Docker is logged in
+            script {
+                // Assuming Docker login was successful in earlier stage, you can push here
+                sh "docker push registry.digitalocean.com/repo-name/${IMAGE_NAME}:${IMAGE_TAG}"
+            }
         }
         failure {
             echo 'Build failed.'
