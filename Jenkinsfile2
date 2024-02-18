@@ -1,0 +1,39 @@
+pipeline {
+    agent any
+
+    environment {
+        // Define the Docker image name and tag
+        IMAGE_NAME = 'imagination'
+        IMAGE_TAG = 'latest'
+        // Repository URL
+        REPO_URL = 'https://github.com/resantinos/public.git'
+    }
+
+    stages {
+        stage('Clone Repository') {
+            steps {
+                // Clone the GitHub repository
+                git "${REPO_URL}"
+            }
+        }
+
+        stage('Build Docker Image') {
+            steps {
+                script {
+                    // Build the Docker image from the Dockerfile in the cloned repo
+                    docker.build("${IMAGE_NAME}:${IMAGE_TAG}")
+                }
+            }
+        }
+    }
+
+    post {
+        success {
+            echo 'Build succeeded.'
+            // Here you can add steps to push the image to a registry, for example
+        }
+        failure {
+            echo 'Build failed.'
+        }
+    }
+}
