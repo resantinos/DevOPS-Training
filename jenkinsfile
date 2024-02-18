@@ -1,0 +1,63 @@
+pipeline {
+    agent any
+
+    environment {
+        // Define registry credentials ID
+        // Make sure to replace 'your-registry-credentials-id' with the ID of your DigitalOcean registry credentials stored in Jenkins
+        DOCKER_REGISTRY_CREDENTIALS_ID = 'your-registry-credentials-id'
+        
+        // Define your image name
+        IMAGE_NAME = 'your-registry-name.digitaloceanspaces.com/my-apache2'
+        
+        // Version or tag for your image
+        IMAGE_TAG = 'latest'
+    }
+
+    stages {
+        stage('Clone Repository') {
+            steps {
+                // Clones your GitHub repository
+                git 'https://github.com/your-username/your-repo.git'
+            }
+        }
+        
+        stage('Build Docker Image') {
+            steps {
+                script {
+                    // Change directory to where your Dockerfile is, if necessary
+                    dir('Dockerfiles') {
+                        // Build the Docker image
+                        sh 'docker build -t $IMAGE_NAME:$IMAGE_TAG .'
+                    }
+                }
+            }
+        }
+        
+        stage('Login to DigitalOcean Container Registry') {
+            steps {
+                script {
+                    // Login to DigitalOcean Container Registry
+                    // Ensure you've added your DigitalOcean access token as credentials in Jenkins
+                    docker.withRegistry('https://registry.digitalocean.com', DOCKER_REGISTRY_CREDENTIALS_ID) {
+                    }
+                }
+            }
+        }
+        
+        stage('Push Docker Image') {
+            steps {
+                script {
+                    // Push the Docker image to your DigitalOcean Container Registry
+                    sh 'docker push $IMAGE_NAME:$IMAGE_TAG'
+                }
+            }
+        }
+    }
+    
+    post {
+        always {
+            // Clean up Docker images to avoid filling up Jenkins agent
+            sh 'docker rmi $IMAGE_NAME:$IMAGE_TAG'
+        }
+    }
+}
