@@ -5,10 +5,10 @@ This is a DevOPS CI/CD project including Terraform for intrastructure deployment
 
 ## Requirements:
 - DigitalOcean account (use this link to registser, you will get me some DO credits and help me improve this project: https://m.do.co/c/a29a96bb183b)
-- installed Terraform
+- installed Terraform https://developer.hashicorp.com/terraform/tutorials/aws-get-started/install-cli
 - SSH key named "key" in DO
-- doctl installed and authenticated locally
-
+- doctl installed and authenticated locally https://docs.digitalocean.com/reference/doctl/how-to/install/
+- installed Ansible https://docs.ansible.com/ansible/latest/installation_guide/intro_installation.html
 ## Usages
 
 1. Deploy the infrastructure with terraform.
@@ -17,7 +17,7 @@ This is a DevOPS CI/CD project including Terraform for intrastructure deployment
  - jenkins_server
 3. Launch the jenkins.yml playbook, then docker_ansible_kubectl_doctl_helm.yml
    This assumes you have direct SSH access to your servers, which you should after
-   You can lanuch it like this: "ansible-playbook -i hosts.ini jenkins.yml"
+- You can lanuch it like this: "ansible-playbook -i hosts.ini jenkins.yml"
 4. Activate Jenkins (get the admin pass from the output of the playbook)
 - MAKE SURE TO SETUP YOUR JENKINS SECRETS LIKE SPECIFIED BELOW
 -  docker - ID:docker - Username and Password - (username is your email which you have used to register to DO, password is the DO API token which you need to generate from the GUI)
@@ -27,6 +27,11 @@ This is a DevOPS CI/CD project including Terraform for intrastructure deployment
 - run Jekins_Pipelines/build_image_and_push_to_registry first
 - run deploy_to_kubernetes
 - run deploy_to_help_oneshot
+6. You should be good to go from this point.
+
+## Remarks
+1. Prometheus will be preconfigured to catch the metrics from the apache pod, apache config is set to accept the traffic from 10.255, change this to your actual IP range. There is no need to expose prometheus to the public. You can, of course if you want to configure additional scrapes.
+2. There may be some hardcoded stuff which I forgot about, so make sure to review the code you are launching.
 
 ## Contributing
 
