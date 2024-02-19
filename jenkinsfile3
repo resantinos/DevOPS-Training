@@ -46,6 +46,7 @@ pipeline {
                     // Apply the Kubernetes deployment
                     sh "kubectl apply -f ${DEPLOYMENT_FILE}"
                     sh "kubectl apply -f ${LB_FILE}"
+                    sh "kubectl rollout restart deployment/my-application"
                 }
             }
         }
