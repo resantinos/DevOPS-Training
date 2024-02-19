@@ -1,0 +1,103 @@
+- name: Install and configure Jenkins LTS on Ubuntu/Debian
+  hosts: jenkins_server
+  become: yes
+  tasks:
+    - name: Install OpenJDK 17
+      ansible.builtin.apt:
+        name:
+          - fontconfig
+          - openjdk-17-jre
+        update_cache: yes
+        state: present
+
+    - name: Download Jenkins repository key
+      ansible.builtin.get_url:
+        url: https://pkg.jenkins.io/debian-stable/jenkins.io-2023.key
+        dest: /usr/share/keyrings/jenkins-keyring.asc
+        mode: '0644'
+
+    - name: Add Jenkins LTS repository
+      ansible.builtin.lineinfile:
+        path: /etc/apt/sources.list.d/jenkins.list
+        line: "deb [signed-by=/usr/share/keyrings/jenkins-keyring.asc] https://pkg.jenkins.io/debian-stable binary/"
+        create: yes
+
+    - name: Update apt cache immediately after adding Jenkins repo
+      ansible.builtin.apt:
+        update_cache: yes
+
+    - name: Install Jenkins
+      ansible.builtin.apt:
+        name: jenkins
+        state: present
+
+    - name: Get Jenkins initial admin password
+      ansible.builtin.shell: cat /var/lib/jenkins/secrets/initialAdminPassword
+      register: jenkins_admin_password
+      changed_when: false
+
+    - name: Get the password
+      ansible.builtin.debug:
+        msg: "Jenkins initial admin password is: {{ jenkins_admin_password.stdout }}"
+
+    # Task to ensure the Jenkins user exists
+    - name: Ensure Jenkins user exists
+      ansible.builtin.user:
+        name: jenkins
+        state: present
+        # Optional: Uncomment to create a home directory if it doesn't exist
+        createhome: yes
+      tags:
+        - ssh_key
+
+    # Task to ensure the .ssh directory exists
+    - name: Ensure .ssh directory exists for Jenkins user
+      ansible.builtin.file:
+        path: /home/jenkins/.ssh
+        state: directory
+        owner: jenkins
+        group: jenkins
+        mode: '0700'
+      tags:
+        - ssh_key
+
+    # Task to generate an SSH private key
+    - name: Generate an SSH private key
+      ansible.builtin.openssl_privatekey:
+        path: /home/jenkins/.ssh/id_rsa
+        size: 2048
+      tags:
+        - ssh_key
+
+    # Task to generate the public key from the private key
+    - name: Generate SSH public key
+      ansible.builtin.shell: ssh-keygen -y -f /home/jenkins/.ssh/id_rsa > /home/jenkins/.ssh/id_rsa.pub
+      args:
+        creates: /home/jenkins/.ssh/id_rsa.pub
+      tags:
+        - ssh_key
+
+    # Task to display the public key
+    - name: Display SSH public key
+      ansible.builtin.shell: cat /home/jenkins/.ssh/id_rsa.pub
+      register: ssh_public_key
+      tags:
+        - ssh_key
+    #task to display private key
+    - name: Display SSH Private Key
+      ansible.builtin.shell: cat /home/jenkins/.ssh/id_rsa
+      register: ssh_private_key
+      tags:
+        - ssh_key_priv
+
+    - name: Show the public key
+      ansible.builtin.debug:
+        msg: "SSH public key is: {{ ssh_public_key.stdout }}"
+      tags:
+        - ssh_key
+
+    - name: Show the private key
+      ansible.builtin.debug:
+        msg: "SSH private key is: {{ ssh_private_key.stdout }}"
+      tags:
+        - ssh_key_priv

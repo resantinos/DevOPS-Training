@@ -1,0 +1,61 @@
+- name: Install Wazuh stack on Ubuntu server
+  hosts: wazuh_server
+  become: yes
+  vars:
+    wazuh_version: "4.7"
+    ip_address: "{{ ansible_default_ipv4.address }}"
+
+  tasks:
+    - name: Install necessary packages
+      apt:
+        name:
+          - curl
+          - jq
+        update_cache: yes
+
+    - name: Download Wazuh installation script
+      get_url:
+        url: "https://packages.wazuh.com/{{ wazuh_version }}/wazuh-install.sh"
+        dest: "/root/wazuh-install.sh"
+        mode: '0755'
+
+    - name: Download configuration template
+      get_url:
+        url: "https://packages.wazuh.com/{{ wazuh_version }}/config.yml"
+        dest: "/root/config.yml"
+
+    - name: Replace IP placeholders in config.yml
+      become: yes
+      ansible.builtin.shell: |
+        sed -i 's|<indexer-node-ip>|{{ ansible_default_ipv4.address }}|g' /root/config.yml
+        sed -i 's|<wazuh-manager-ip>|{{ ansible_default_ipv4.address }}|g' /root/config.yml
+        sed -i 's|<dashboard-node-ip>|{{ ansible_default_ipv4.address }}|g' /root/config.yml
+      args:
+        executable: /bin/bash
+
+    - name: Generate configuration files
+      shell: "bash /root/wazuh-install.sh --generate-config-files"
+      args:
+        chdir: "/root"
+
+    - name: Install Wazuh indexer
+      shell: "bash /root/wazuh-install.sh --wazuh-indexer node-1"
+      args:
+        chdir: "/root"
+
+    - name: Start Wazuh cluster
+      shell: "bash /root/wazuh-install.sh --start-cluster"
+      args:
+        chdir: "/root"
+
+    - name: Install Wazuh server
+      shell: "bash /root/wazuh-install.sh --wazuh-server wazuh-1"
+      args:
+        chdir: "/root"
+    - name: Install Wazuh dashboard
+      become: yes
+      ansible.builtin.shell: "bash /root/wazuh-install.sh --wazuh-dashboard dashboard"
+      args:
+       executable: /bin/bash
+      tags:
+        - install_dashboard

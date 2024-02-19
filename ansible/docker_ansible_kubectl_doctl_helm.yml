@@ -1,0 +1,62 @@
+- name: install docker ansible and kubectl
+  hosts: jenkins_server
+  become: yes
+  tasks:
+    # Installing Docker
+    - name: Install Docker
+      ansible.builtin.apt:
+        name: docker.io
+        state: present
+        update_cache: yes
+
+    - name: Add Jenkins user to Docker group
+      ansible.builtin.user:
+        name: jenkins
+        groups: docker
+        append: yes
+
+    # Installing Ansible
+    - name: Install Ansible
+      ansible.builtin.apt:
+        name: ansible
+        state: present
+        update_cache: yes
+    - name: Add Kubernetes signing key
+      ansible.builtin.apt_key:
+        url: https://packages.cloud.google.com/apt/doc/apt-key.gpg
+        state: present
+
+    - name: Add Kubernetes apt repository
+      ansible.builtin.apt_repository:
+        repo: deb https://apt.kubernetes.io/ kubernetes-xenial main
+        state: present
+        filename: 'kubernetes'
+    # installing kubectl
+    - name: Install kubectl
+      ansible.builtin.apt:
+        name: kubectl
+        state: present
+        update_cache: yes
+
+    # Installing doctl
+    - name: Download doctl
+      ansible.builtin.get_url:
+        url: https://github.com/digitalocean/doctl/releases/download/v1.101.0/doctl-1.101.0-linux-amd64.tar.gz
+        dest: /tmp/doctl-1.101.0-linux-amd64.tar.gz
+        mode: '0644'
+
+    - name: Extract doctl and move to /usr/local/bin
+      ansible.builtin.shell:
+        cmd: tar xf /tmp/doctl-1.101.0-linux-amd64.tar.gz -C /tmp && mv /tmp/doctl /usr/local/bin
+        creates: /usr/local/bin/doctl
+
+    - name: Move doctl to /usr/local/bin
+      ansible.builtin.command:
+        cmd: mv /tmp/doctl /usr/local/bin/doctl
+        creates: /usr/local/bin/doctl
+
+    # Installing Helm
+    - name: Install Helm
+      ansible.builtin.shell:
+        cmd: curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
+        creates: /usr/local/bin/helm
