@@ -5,10 +5,11 @@ pipeline {
         DEPLOYMENT_FILE = './gitara2/deployment.yaml' // Path to your Kubernetes deployment YAML file
         LB_FILE = '.gitara2/lb.yaml' // Path to your loadbalancer YAML file
         CLUSTER_ID = '4a341116-d3f3-4a3c-a144-082038849edb'
+        REPO_URL = 'https://github.com/resantinos/public.git'
     }
 
     stages {
-        
+
         stage('Clone Repository') {
             steps {
                 // Clone the public GitHub repository
