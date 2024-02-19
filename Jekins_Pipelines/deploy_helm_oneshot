@@ -1,17 +1,17 @@
 pipeline {
     agent any
     environment {
-        DEPLOYMENT_FILE = './gitara2/deployment.yaml' // Path to your Kubernetes deployment YAML file
-        LB_FILE = './gitara2/lb.yaml' // Path to your loadbalancer YAML file
+        DEPLOYMENT_FILE = './workdir/Kubernetes/deployment.yaml' // Path to your Kubernetes deployment YAML file
+        LB_FILE = './workdir/Kubernetes/lb.yaml' // Path to your loadbalancer YAML file
         REPO_URL = 'https://github.com/resantinos/public.git'
     }
     stages {
         stage('Clone Repository') {
             steps {
                 // Clone the public GitHub repository
-                sh "rm -rf ./gitara2"
-                sh "mkdir ./gitara2"
-                sh "git clone ${REPO_URL} ./gitara2"
+                sh "rm -rf ./workdir"
+                sh "mkdir ./workdir"
+                sh "git clone ${REPO_URL} ./workdir"
             }
         }
 
