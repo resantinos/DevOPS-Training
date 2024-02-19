@@ -1,0 +1,53 @@
+pipeline {
+    agent any
+    environment {
+        DEPLOYMENT_FILE = './gitara2/deployment.yaml' // Path to your Kubernetes deployment YAML file
+        LB_FILE = './gitara2/lb.yaml' // Path to your loadbalancer YAML file
+        REPO_URL = 'https://github.com/resantinos/public.git'
+    }
+    stages {
+        stage('Clone Repository') {
+            steps {
+                // Clone the public GitHub repository
+                sh "rm -rf ./gitara2"
+                sh "mkdir ./gitara2"
+                sh "git clone ${REPO_URL} ./gitara2"
+            }
+        }
+
+        stage('Authenticate with DOCTL') {
+            steps {
+                script {
+                    withCredentials([string(credentialsId: 'token', variable: 'TOKEN')]) {
+                        // explort token to env
+                        env.DIGITALOCEAN_ACCESS_TOKEN = "${TOKEN}"
+                    }
+                    withCredentials([string(credentialsId: 'cluster', variable: 'CLUSTER_ID')]) {
+                        sh "doctl kubernetes cluster kubeconfig save ${CLUSTER_ID}"
+                    }                  
+                }
+            }
+        }
+
+         stage('Verify kubectl is working') {
+            steps {
+                script {
+                    sh "kubectl get all"
+                }
+            }
+        }
+        stage('Deploy Grafana and Prometheus with Helm') {
+            steps {
+                script {
+                    withCredentials([file(credentialsId: "${env.KUBECONFIG_CREDENTIAL_ID}", variable: 'KUBECONFIG')]) {
+                        sh "helm repo add grafana https://grafana.github.io/helm-charts"
+                        sh "helm repo add prometheus-community https://prometheus-community.github.io/helm-charts"
+                        sh "helm install grafana"
+                        sh "helm install prometheus"
+                        sh "helm repo update"                      
+                    }
+                }
+            }
+        }
+    }
+}
