@@ -22,10 +22,10 @@ pipeline {
         stage('Authenticate with DOCTL') {
             steps {
                 script {
-                    withCredentials([string(credentialsId: 'token', variable: 'TOKEN')])
-                    // explort token to env
-                    env.DIGITALOCEAN_ACCESS_TOKEN = "${TOKEN}"
-                    echo "${TOKEN}"
+                    withCredentials([string(credentialsId: 'token', variable: 'TOKEN')]) {
+                        // explort token to env
+                        env.DIGITALOCEAN_ACCESS_TOKEN = "${TOKEN}"
+                    }
                     sh "doctl kubernetes cluster kubeconfig save ${CLUSTER_ID}"
                 }
             }
