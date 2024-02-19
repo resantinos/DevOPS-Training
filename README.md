@@ -1,5 +1,5 @@
 # Project Name
-*** This is focusing on deployment on DigitalOcean ***
+*** This is focusing on deployment on DigitalOcean *** \n
 This is a DevOPS CI/CD project including Terraform for intra creation, Helm for deploying monitoring, Anisble for configuration of the Jenkins server, Jenkins, Docker, Kubernetes, Apache2.
 
 ## Installation
