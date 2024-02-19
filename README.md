@@ -18,9 +18,9 @@ This is a DevOPS CI/CD project including Terraform for intra creation, Helm for 
    This assumes you have direct SSH access to your servers, which you should after
 4. Activate Jenkins (get the admin pass from the output of the playbook)
   MAKE SURE TO SETUP YOUR JENKINS VARIABLES
-    a. docker - ID:docker - Username and Password - (username is your email which you have used to register to DO, password is the DO API token which you need to generate from the GUI)
-    b. token - ID:token - secret text - the same token as above
-    c. cluster - ID:cluster- secret text - this is the kubernetes cluster ID which can be found in the DO GUI
+-  docker - ID:docker - Username and Password - (username is your email which you have used to register to DO, password is the DO API token which you need to generate from the GUI)
+-  token - ID:token - secret text - the same token as above
+-  cluster - ID:cluster- secret text - this is the kubernetes cluster ID which can be found in the DO GUI
 5. Setup the Jenkins Pipelines
    
 
@@ -35,4 +35,4 @@ Free?
 ## Acknowledgments
 
 - This is by no means a production ready project, please use this with caution.
-- There may be some buys, any hints are welcome for me to improve this.
+- There may be some bugs, any hints are welcome for me to improve this.
