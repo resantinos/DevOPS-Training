@@ -16,8 +16,8 @@ ENV APACHE_PID_FILE /var/run/apache2.pid
 # By default, Apache listens on port 80
 EXPOSE 80
 
-# Copy a website or web application to the DocumentRoot (optional)
-# COPY ./public-html/ /var/www/html
+# Copy your custom "Hello World" page to the DocumentRoot
+COPY ./public-html/index.html /var/www/html/index.html
 
 # Use the "exec" form of CMD to ensure Apache gets PID 1 and can receive Unix signals
 CMD ["apache2ctl", "-D", "FOREGROUND"]
