@@ -51,6 +51,13 @@ pipeline {
         }
     }
     post {
+        always {
+        script {
+            // Remove the built Docker image to free up space
+            sh "docker rmi registry.digitalocean.com/qwerty/imagination:latest"
+        }
+        echo 'Post-build cleanup complete.'
+        }
         success {
             echo 'Build succeeded.'
 
