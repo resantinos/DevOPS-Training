@@ -1,0 +1,63 @@
+pipeline {
+    agent any
+
+    environment {
+        DEPLOYMENT_FILE = './gitara2/deployment.yaml' // Path to your Kubernetes deployment YAML file
+        LB_FILE = '.gitara2/lb.yaml' // Path to your loadbalancer YAML file
+        CLUSTER_ID = '4a341116-d3f3-4a3c-a144-082038849edb'
+    }
+
+    stages {
+        
+        stage('Clone Repository') {
+            steps {
+                // Clone the public GitHub repository
+                sh "rm -rf ./gitara2"
+                sh "mkdir ./gitara2"
+                sh "git clone ${REPO_URL} ./gitara2"
+            }
+        }
+
+        stage('Authenticate with DOCTL') {
+            steps {
+                script {
+                    withCredentials([string(credentialsId: 'token', variable: 'TOKEN')])
+                    // explort token to env
+                    sh "export DIGITALOCEAN_ACCESS_TOKEN='${TOKEN}'"
+                    sh "doctl kubernetes cluster kubeconfig save ${CLUSTER_ID}"
+                }
+            }
+        }
+
+         stage('Verify kubectl is working') {
+            steps {
+                script {
+                    sh "kubectl get all"
+                }
+            }
+        }
+    
+        stage('Deploy to Kubernetes') {
+            steps {
+                script {
+                    // Apply the Kubernetes deployment
+                    sh "kubectl apply -f ${DEPLOYMENT_FILE}"
+                    sh "kubectl apply -f ${LB_FILE}"
+                }
+            }
+        }
+    }
+
+    post {
+        always {
+            echo "completed."
+        }
+        success {
+            echo 'Build succeeded.'
+
+        }
+        failure {
+            echo 'Build failed.'
+        }
+    }
+}
