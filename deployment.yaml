@@ -15,5 +15,6 @@ spec:
       containers:
       - name: my-application
         image: registry.digitalocean.com/qwerty/imagination:latest # Use your image path
+        imagePullPolicy: Always #because I am using latest tag, setting this to instruct kubernetes to always pull a new image
         ports:
         - containerPort: 80 # Adjust based on your application's needs
