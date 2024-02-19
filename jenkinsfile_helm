@@ -39,12 +39,12 @@ pipeline {
         stage('Deploy Grafana and Prometheus with Helm') {
             steps {
                 script {
-                    
+
                     sh "helm repo add grafana https://grafana.github.io/helm-charts"
                     sh "helm repo add prometheus-community https://prometheus-community.github.io/helm-charts"
                     sh "helm repo update"
-                    sh "helm install grafana grafana/grafana --generate-name --namespace monitoring --create-namespace"
-                    sh "helm install prometheus prometheus-community/kube-prometheus-stack --generate-name --namespace monitoring"
+                    sh "helm install grafana grafana/grafana --namespace monitoring --create-namespace"
+                    sh "helm install prometheus prometheus-community/kube-prometheus-stack --namespace monitoring"
 
                 }
             }
