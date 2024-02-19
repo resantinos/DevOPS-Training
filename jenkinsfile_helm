@@ -39,13 +39,11 @@ pipeline {
         stage('Deploy Grafana and Prometheus with Helm') {
             steps {
                 script {
-                    withCredentials([file(credentialsId: "${env.KUBECONFIG_CREDENTIAL_ID}", variable: 'KUBECONFIG')]) {
-                        sh "helm repo add grafana https://grafana.github.io/helm-charts"
-                        sh "helm repo add prometheus-community https://prometheus-community.github.io/helm-charts"
-                        sh "helm repo update"
-                        sh "helm install grafana"
-                        sh "helm install prometheus"      
-                    }
+                    sh "helm repo add grafana https://grafana.github.io/helm-charts"
+                    sh "helm repo add prometheus-community https://prometheus-community.github.io/helm-charts"
+                    sh "helm repo update"
+                    sh "helm install grafana"
+                    sh "helm install prometheus" 
                 }
             }
         }
