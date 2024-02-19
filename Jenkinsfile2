@@ -36,7 +36,7 @@ pipeline {
                     // Ensure Docker is available
                     sh 'docker --version'
                     // Build the Docker image from the Dockerfile in the cloned repo
-                    sh "docker build -t registry.digitalocean.com/qwerty/${IMAGE_NAME}:${IMAGE_TAG} ./gitara2"
+                    sh "docker build --no-cache -t registry.digitalocean.com/qwerty/${IMAGE_NAME}:${IMAGE_TAG} ./gitara2"
                 }
             }
         }
