@@ -35,6 +35,6 @@ EXPOSE 80
 
 # Copy your custom "Hello World" page to the DocumentRoot
 COPY ./public-html/* /var/www/html/
-
+COPY ./ca-certificate.crt /etc/phpmyadmin
 # Use the "exec" form of CMD to ensure Apache gets PID 1 and can receive Unix signals
 CMD ["apache2ctl", "-D", "FOREGROUND"]
