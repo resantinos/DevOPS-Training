@@ -23,6 +23,8 @@ This is a DevOPS CI/CD project including Terraform for intrastructure deployment
 -  docker - ID:docker - Username and Password - (username is your email which you have used to register to DO, password is the DO API token which you need to generate from the GUI)
 -  token - ID:token - secret text - the same token as above
 -  cluster - ID:cluster- secret text - this is the kubernetes cluster ID which can be found in the DO GUI
+-  cert - ID:cert - this is your database certificate
+-  db_hostname - ID:db_hostname - this is your database hostname
 5. Setup the Jenkins Pipelines
 - run Jekins_Pipelines/build_image_and_push_to_registry first
 - run deploy_to_kubernetes
