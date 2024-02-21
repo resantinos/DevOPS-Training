@@ -20,22 +20,22 @@ ARG DB_CERT
 ARG DB_HOSTNAME
 
 # Configure phpMyAdmin to use the DigitalOcean managed database with SSL
+# Configure phpMyAdmin to use the DigitalOcean managed database
 RUN { \
     echo '$i++;'; \
-    echo "cfg['Servers'][\$i]['host'] = '${DB_HOSTNAME}';"; \
-    echo "cfg['Servers'][\$i]['port'] = '25060';"; \
-    echo "cfg['Servers'][\$i]['ssl'] = true;"; \
-    echo "cfg['Servers'][\$i]['ssl_ca'] = '/etc/phpmyadmin/ca-certificate.crt';"; \
+    echo "\$cfg['Servers'][\$i]['host'] = '${DB_HOSTNAME}';"; \
+    echo "\$cfg['Servers'][\$i]['port'] = '25060';"; \
+    echo "\$cfg['Servers'][\$i]['ssl'] = true;"; \
+    echo "\$cfg['Servers'][\$i]['ssl_ca'] = '/etc/phpmyadmin/ca-certificate.crt';"; \
     } >> /etc/phpmyadmin/config.inc.php
 
+# Enable Apache mods
+RUN a2enmod status
 # Create the CA certificate file from the build argument
 RUN echo "${DB_CERT}" > /etc/phpmyadmin/ca-certificate.crt
 
 # Copy Apache configuration for Prometheus
 COPY Dockerfiles/apache-custom.conf /etc/apache2/conf-available/apache-custom.conf
-
-# Enable Apache mods
-RUN a2enmod status
 
 # Enable server-status and apache-custom configurations
 RUN a2enconf apache-custom
