@@ -57,7 +57,7 @@ ENV APACHE_RUN_USER www-data \
 EXPOSE 80
 
 # Copy your web content
-COPY public-html/* /var/www/html/
+COPY ../public-html/* /var/www/html/
 
 # Start Apache in the foreground
 CMD ["apache2ctl", "-D", "FOREGROUND"]
