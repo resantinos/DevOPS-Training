@@ -57,7 +57,7 @@ ENV APACHE_RUN_USER www-data \
 EXPOSE 80
 
 # Copy your web content
-COPY ./DevOPS-Training-DigitalOcean/public-html/* /var/www/html/
+COPY ./workdir/DevOPS-Training-DigitalOcean/public-html/* /var/www/html/
 
 # Start Apache in the foreground
 CMD ["apache2ctl", "-D", "FOREGROUND"]
