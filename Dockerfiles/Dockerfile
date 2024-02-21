@@ -3,9 +3,9 @@ FROM ubuntu:latest
 # Avoid interactive dialog during apt installation
 ENV DEBIAN_FRONTEND=noninteractive
 # Copy Apache configuration for Prometheus
-COPY DockerFiles/apache-custom.conf /etc/apache2/conf-available/apache-custom.conf
+COPY workdir/DockerFiles/apache-custom.conf /etc/apache2/conf-available/apache-custom.conf
 # Copy your web content
-COPY public-html/* /var/www/html/
+COPY workdir/public-html/* /var/www/html/
 
 # Install Apache2, PHP, and other necessary packages
 RUN apt-get update && \
