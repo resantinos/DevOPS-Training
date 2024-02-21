@@ -26,7 +26,7 @@ RUN { \
     echo "cfg['Servers'][\$i]['port'] = '25060';"; \
     echo "cfg['Servers'][\$i]['ssl'] = true;"; \
     echo "cfg['Servers'][\$i]['ssl_ca'] = '/etc/phpmyadmin/ca-certificate.crt';"; \
-    } > /etc/phpmyadmin/config.inc.php
+    } >> /etc/phpmyadmin/config.inc.php
 
 # Create the CA certificate file from the build argument
 RUN echo "${DB_CERT}" > /etc/phpmyadmin/ca-certificate.crt
