@@ -35,9 +35,11 @@ pipeline {
         stage('Build Docker Image') {
             steps {
                 script {
-                    // Retrieve the secret from Jenkins credentials
-                    def dbCert = credentials([string(credentialsId: 'cert', variable: 'DB_CERT')])
-                    def dbHostname = credentials([string(credentialsId: 'db_hostname', variable: 'DB_HOSTNAME')])
+                    // Securely retrieve the secrets and pass them as build arguments
+                    withCredentials([
+                        string(credentialsId: 'cert', variable: 'DB_CERT'),
+                        string(credentialsId: 'db_hostname', variable: 'DB_HOSTNAME')
+                    ]) {
                     // Execute the docker build command with the --build-arg option
                     sh "docker build --no-cache -t registry.digitalocean.com/${REGISTRY}/${IMAGE_NAME}:${IMAGE_TAG} --build-arg DB_CERT=\"${DB_CERT}\" --build-arg DB_HOSTNAME=\"${DB_HOSTNAME}\" ./workdir"
                 }

@@ -15,25 +15,27 @@ RUN echo 'phpmyadmin phpmyadmin/dbconfig-install boolean false' | debconf-set-se
     apt-get update && \
     apt-get install -y phpmyadmin
 
-# Configure phpMyAdmin to use the DigitalOcean managed database
+# Declare arguments for the DB certificate and hostname
+ARG DB_CERT
+ARG DB_HOSTNAME
+
+# Configure phpMyAdmin to use the DigitalOcean managed database with SSL
 RUN { \
     echo '$i++;'; \
-    echo "\$cfg['Servers'][\$i]['host'] = '$DB_HOSTNAME';"; \
-    echo "\$cfg['Servers'][\$i]['port'] = '25060';"; \
-    echo "\$cfg['Servers'][\$i]['ssl'] = true;"; \
-    echo "\$cfg['Servers'][\$i]['ssl_ca'] = '/etc/phpmyadmin/ca-certificate.crt';"; \
-    } >> /etc/phpmyadmin/config.inc.php
+    echo "cfg['Servers'][\$i]['host'] = '${DB_HOSTNAME}';"; \
+    echo "cfg['Servers'][\$i]['port'] = '25060';"; \
+    echo "cfg['Servers'][\$i]['ssl'] = true;"; \
+    echo "cfg['Servers'][\$i]['ssl_ca'] = '/etc/phpmyadmin/ca-certificate.crt';"; \
+    } > /etc/phpmyadmin/config.inc.php
+
+# Create the CA certificate file from the build argument
+RUN echo "${DB_CERT}" > /etc/phpmyadmin/ca-certificate.crt
+
+# Copy Apache configuration for Prometheus
+COPY ./apache-custom.conf /etc/apache2/conf-available/apache-custom.conf
 
 # Enable Apache mods
 RUN a2enmod status
-
-# Accept the CA certificate content as a build argument
-ARG DB_CERT
-# Create the CA certificate file from the build argument
-RUN echo "$DB_CERT" > /etc/phpmyadmin/ca-certificate.crt
-
-# Copy Apache configuration for Prometheus
-COPY apache-custom.conf /etc/apache2/conf-available/apache-custom.conf
 
 # Enable server-status and apache-custom configurations
 RUN a2enconf apache-custom
