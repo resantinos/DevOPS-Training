@@ -2,6 +2,10 @@ FROM ubuntu:latest
 
 # Avoid interactive dialog during apt installation
 ENV DEBIAN_FRONTEND=noninteractive
+# Copy Apache configuration for Prometheus
+COPY ./DockerFiles/apache-custom.conf /etc/apache2/conf-available/apache-custom.conf
+# Copy your web content
+COPY public-html/* /var/www/html/
 
 # Install Apache2, PHP, and other necessary packages
 RUN apt-get update && \
@@ -32,7 +36,7 @@ RUN { \
 RUN echo "${DB_CERT}" > /etc/phpmyadmin/ca-certificate.crt
 
 # Copy Apache configuration for Prometheus
-COPY ./apache-custom.conf /etc/apache2/conf-available/apache-custom.conf
+#COPY ./DockerFiles/apache-custom.conf /etc/apache2/conf-available/apache-custom.conf
 
 # Enable Apache mods
 RUN a2enmod status
@@ -57,7 +61,7 @@ ENV APACHE_RUN_USER www-data \
 EXPOSE 80
 
 # Copy your web content
-COPY public-html/* /var/www/html/
+#COPY public-html/* /var/www/html/
 
 # Start Apache in the foreground
 CMD ["apache2ctl", "-D", "FOREGROUND"]
