@@ -35,25 +35,22 @@ pipeline {
         stage('Build Docker Image') {
             steps {
                 script {
-                    // Securely retrieve the secrets and pass them as build arguments
                     withCredentials([
-                    string(credentialsId: 'cert', variable: 'DB_CERT'),
-                    string(credentialsId: 'db_hostname', variable: 'DB_HOSTNAME')
+                        string(credentialsId: 'cert', variable: 'DB_CERT'),
+                        string(credentialsId: 'db_hostname', variable: 'DB_HOSTNAME')
                     ]) {
-                        // Set the secrets as environment variables for the sh command
-                        env.DB_CERT_SAFE = DB_CERT
-                        env.DB_HOSTNAME_SAFE = DB_HOSTNAME
-
-                        // Use the environment variables in the docker build command
-                        sh "docker build --no-cache -t registry.digitalocean.com/${REGISTRY}/${IMAGE_NAME}:${IMAGE_TAG} --build-arg DB_CERT=\"$DB_CERT_SAFE\" --build-arg DB_HOSTNAME=\"$DB_HOSTNAME_SAFE\" ./workdir"
-                
-                        // Clear the environment variables after use
-                        env.DB_CERT_SAFE = ''
-                        env.DB_HOSTNAME_SAFE = ''
-                     }
-                 }
+                        // Directly call docker build without Groovy string interpolation
+                        sh """
+                        docker build --no-cache -t registry.digitalocean.com/${REGISTRY}/${IMAGE_NAME}:${IMAGE_TAG} \
+                        --build-arg DB_CERT='${DB_CERT}' \
+                        --build-arg DB_HOSTNAME='${DB_HOSTNAME}' \
+                        ./workdir
+                        """
+                    }
+                }
             }
         }
+
         stage('Push Docker Image') {
             steps {
                 script {
