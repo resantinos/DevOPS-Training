@@ -44,7 +44,7 @@ pipeline {
                         docker build --no-cache -t registry.digitalocean.com/${REGISTRY}/${IMAGE_NAME}:${IMAGE_TAG} \
                         --build-arg DB_CERT='${DB_CERT}' \
                         --build-arg DB_HOSTNAME='${DB_HOSTNAME}' \
-                        ./workdir
+                        ./workdir/Dockerfiles
                         """
                     }
                 }
