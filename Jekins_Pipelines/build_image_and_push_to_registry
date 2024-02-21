@@ -2,21 +2,22 @@ pipeline {
     agent any
 
     environment {
-        // Define the Docker image name and tag
+        // Define the Docker registry, image name and tag
         IMAGE_NAME = 'imagination'
         IMAGE_TAG = 'latest'
-        // Repository URL
-        REPO_URL = 'https://github.com/resantinos/public.git'
         REGISTRY = 'qwerty'
+        // Repository URL
+        REPO_URL = 'https://github.com/resantinos/DevOPS-Training-DigitalOcean.git'
+        
     }
 
     stages {
         stage('Clone Repository') {
             steps {
                 // Clone the public GitHub repository
-                sh "rm -rf ./gitara2"
-                sh "mkdir ./gitara2"
-                sh "git clone ${REPO_URL} ./gitara2"
+                sh "rm -rf ./workdir"
+                sh "mkdir ./workdir"
+                sh "git clone ${REPO_URL} ./workdir"
             }
         }
 
@@ -34,10 +35,11 @@ pipeline {
         stage('Build Docker Image') {
             steps {
                 script {
-                    // Ensure Docker is available
-                    sh 'docker --version'
-                    // Build the Docker image from the Dockerfile in the cloned repo
-                    sh "docker build --no-cache -t registry.digitalocean.com/${REGISTRY}/${IMAGE_NAME}:${IMAGE_TAG} ./gitara2"
+                    // Retrieve the secret from Jenkins credentials
+                    def dbCert = credentials([string(credentialsId: 'cert', variable: 'DB_CERT')])
+                    def dbHostname = credentials([string(credentialsId: 'db_hostname', variable: 'DB_HOSTNAME')])
+                    // Execute the docker build command with the --build-arg option
+                    sh "docker build --no-cache -t registry.digitalocean.com/${REGISTRY}/${IMAGE_NAME}:${IMAGE_TAG} --build-arg DB_CERT=\"${DB_CERT}\" --build-arg DB_HOSTNAME=\"${DB_HOSTNAME}\" ./workdir"
                 }
             }
         }
