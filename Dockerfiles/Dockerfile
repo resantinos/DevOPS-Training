@@ -34,9 +34,9 @@ RUN a2enmod status
 # Create the CA certificate file from the build argument
 RUN echo "${DB_CERT}" > /etc/phpmyadmin/ca-certificate.crt
 COPY Dockerfiles/convert_cert.sh /tmp/convert_cert.sh
-RUN chmod 700 convert_cert.sh
-RUN convert_cert.sh
-RUN rm convert_cert.sh
+RUN chmod 700 /tmp/convert_cert.sh
+RUN /tmp/convert_cert.sh
+RUN rm /tmp/convert_cert.sh
 # Copy Apache configuration for Prometheus
 COPY Dockerfiles/apache-custom.conf /etc/apache2/conf-available/apache-custom.conf
 
