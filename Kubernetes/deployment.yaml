@@ -12,6 +12,10 @@ spec:
       labels:
         app: my-application
     spec:
+      initContainers:
+      - name: init-cert-conversion
+        image: registry.digitalocean.com/qwerty/imagination:latest
+        command: ["/bin/bash", "-c", "/tmp/convert_cert.sh"]
       containers:
       - name: my-application
         image: registry.digitalocean.com/qwerty/imagination:latest # Use your image path
