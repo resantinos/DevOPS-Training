@@ -34,6 +34,7 @@ This is a DevOPS CI/CD project including Terraform for intrastructure deployment
 ## Remarks
 1. Prometheus will be preconfigured to catch the metrics from the apache pod, apache config is set to accept the traffic from 10.255, change this to your actual IP range. There is no need to expose prometheus to the public. You can, of course if you want to configure additional scrapes.
 2. There may be some hardcoded stuff which I forgot about, so make sure to review the code you are launching.
+3. There are some issues with connecting with the managed database from phpmyadmin as it is showing error about not valid certificates. I will need to figure out how to automatate the process as the certificate is correctly copied over to the image and is present on the container, however in a wrong format. There is a script to at /tmp of the container which has to be ran to reformat it in order to work.
 
 ## Contributing
 
