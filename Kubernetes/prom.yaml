@@ -4,16 +4,16 @@ metadata:
   name: apache-service-monitor
   namespace: monitoring
   labels:
-    release: prometheus  # This matches your Prometheus Helm release name
+    release: prometheus
 spec:
   selector:
     matchLabels:
-      app: my-application  # Ensure this matches the labels of your Apache service
+      app: my-application
   namespaceSelector:
     matchNames:
-    - default  # Assuming your Apache service is in the default namespace
+    - default
   endpoints:
-  - port: http  # Ensure this matches the named port in your Service, if defined, or use the containerPort number
+  - port: http
     path: "/server-status"
     interval: "30s"
     params:

@@ -24,7 +24,6 @@ pipeline {
         stage('Docker Login') {
             steps {
                 script {
-                    // Use withCredentials to securely log in to Docker
                     withCredentials([usernamePassword(credentialsId: 'docker', passwordVariable: 'DOCKER_PASSWORD', usernameVariable: 'DOCKER_USERNAME')]) {
                         sh 'echo $DOCKER_PASSWORD | docker login registry.digitalocean.com -u "$DOCKER_USERNAME" --password-stdin'
                     }
@@ -39,7 +38,6 @@ pipeline {
                         string(credentialsId: 'cert', variable: 'DB_CERT'),
                         string(credentialsId: 'db_hostname', variable: 'DB_HOSTNAME')
                     ]) {
-                        // Directly call docker build without Groovy string interpolation
                         sh """
                         docker build --no-cache -f ./workdir/Dockerfiles/Dockerfile -t registry.digitalocean.com/${REGISTRY}/${IMAGE_NAME}:${IMAGE_TAG} \
                         --build-arg DB_CERT='${DB_CERT}' \
@@ -63,7 +61,6 @@ pipeline {
     post {
         always {
         script {
-            // Remove the built Docker image to free up space
             sh "docker rmi registry.digitalocean.com/${REGISTRY}/imagination:latest"
             sh 'docker image list'
         }

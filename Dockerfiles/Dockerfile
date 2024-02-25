@@ -32,11 +32,13 @@ RUN { \
 # Enable Apache mods
 RUN a2enmod status
 # Create the CA certificate file from the build argument
-RUN echo "${DB_CERT}" > /etc/phpmyadmin/ca-certificate.crt
+RUN echo "${DB_CERT}" > /tmp/cert
+RUN cat /tmp/cert | sed -e 's/-----BEGIN CERTIFICATE-----/&\n/' -e 's/-----END CERTIFICATE-----/\n&/' | awk 'BEGIN {RS=""; FS="\n"} {print $1; body = substr($0, length($1) + 2, length($0) - length($1) - length($NF) - 3); gsub(/ /, "", body); len = length(body); for (i=1; i<=len; i+=64) {print substr(body, i, 64);} print $NF;}' > /etc/phpmyadmin/ca-certificate.crt
+RUN rm /tmp/cert
 #Convert the cert
-COPY Dockerfiles/convert_cert.sh /tmp/convert_cert.sh
-RUN chmod +x /tmp/convert_cert.sh
-CMD ["/bin/bash", "-c", "/tmp/convert_cert.sh"]
+#COPY Dockerfiles/convert_cert.sh /tmp/convert_cert.sh
+#RUN chmod +x /tmp/convert_cert.sh
+#CMD ["/bin/bash", "-c", "/tmp/convert_cert.sh"]
 
 # Copy Apache configuration for Prometheus
 COPY Dockerfiles/apache-custom.conf /etc/apache2/conf-available/apache-custom.conf
