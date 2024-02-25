@@ -22,7 +22,6 @@ pipeline {
             steps {
                 script {
                     withCredentials([string(credentialsId: 'token', variable: 'TOKEN')]) {
-                        // explort token to env
                         env.DIGITALOCEAN_ACCESS_TOKEN = "${TOKEN}"
                     }
                     withCredentials([string(credentialsId: 'cluster', variable: 'CLUSTER_ID')]) {
